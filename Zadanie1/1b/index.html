@@ -84,7 +84,8 @@
         gl.enableVertexAttribArray(posAttrLocation);
 
         gl.useProgram(program);
-        gl.drawArrays(gl.TRIANGLE_FAN, 0, 14);
+        gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
+        gl.disableClientState(gl.VERTEX_ARRAY);
     }
   </script>
 </html>
