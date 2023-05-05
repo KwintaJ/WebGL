@@ -59,10 +59,8 @@
 
         gl.validateProgram(program);
         let squareVert = [
-            0.5, 0.5,
-            -0.5, 0.5,
-            -0.5, -0.5,
-            0.5, -0.5
+            -0.5, 0.5, 0.5, 0.5, 0.5,-0.5, // Triangle 1
+            -0.5, 0.5, 0.5,-0.5, -0.5,-0.5 // Triangle 2
         ]
 
         const squareVertexBufferObject = gl.createBuffer();
@@ -83,7 +81,8 @@
         gl.enableVertexAttribArray(posAttrLocation);
 
         gl.useProgram(program);
-        gl.drawArrays(gl.TRIANGLES, 0, 4);
+        gl.drawArrays(gl.TRIANGLES, 0, 3);
+        gl.drawArrays(gl.TRIANGLES, 4, 3);
     }
   </script>
 </html>
