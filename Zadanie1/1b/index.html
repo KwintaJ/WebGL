@@ -83,6 +83,7 @@
 
         gl.enableVertexAttribArray(posAttrLocation);
 
+        gl.vertexPointer(hexVert);
         gl.useProgram(program);
         gl.drawArrays(gl.TRIANGLE_FAN, 0, 6);
     }
