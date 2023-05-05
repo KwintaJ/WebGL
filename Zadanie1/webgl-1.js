@@ -9,5 +9,4 @@ function main() {
   }
 
   gl.drawArrays(gl.TRIANGLES, 0, 4)
-  gl.clear(gl.COLOR_BUFFER_BIT);
 }
