@@ -8,6 +8,6 @@ function main() {
     return;
   }
 
-  gl.clearColor(0.0, 0.0, 0.0, 1.0);
+  gl.drawArrays(gl.TRIANGLES, 0, 4)
   gl.clear(gl.COLOR_BUFFER_BIT);
 }
