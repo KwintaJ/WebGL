@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8" />
+    <title>WebGL Jan Kwinta OOP</title>
+  </head>
+  <body onload="Triangle();">
+    <canvas id="canvas-1" width="800" height="800"></canvas>
+  </body>
+  
+  <script>
+    const vertexShaderTxt = `
+        precision mediump float;
+        attribute vec2 vertPosition;
+        attribute vec3 vertColor;
+        varying vec3 fragColor;
+        void main()
+        {
+            fragColor = vertColor;
+            gl_Position = vec4(vertPosition, 0.0, 1.0);
+        }
+    `
+    
+    const fragmentShaderTxt = `
+        precision mediump float;
+        varying vec3 fragColor;
+        void main()
+        {
+            gl_FragColor = vec4(fragColor, 1.0); // R,G,B, opacity
+        }
+    `
+    
+    class World {
+        #backgroundColor;
+        #program;
+        #fragmentShader;
+        #vertexShader;
+        #vertexBufferObj;
+        
+        constructor(id, bckgrnd) {
+            let canvas = document.getElementById(id);
+            this.gl = canvas.getContext('webgl');
+            this.#program = this.gl.createProgram();
+            if (!this.gl) {
+                alert('webgl not supported');
+            }
+            this.prepareBackground(bckgrnd);
+        }
+    
+        prepareBackground(bckgrnd) {
+            this.#backgroundColor = bckgrnd;
+            this.gl.clearColor(...bckgrnd, 1.0);
+            this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+            this.gl.enable(this.gl.DEPTH_TEST);
+            this.gl.enable(this.gl.CULL_FACE);
+        }
+        
+        background(bckgrnd) {
+            this.#backgroundColor = bckgrnd;
+            this.gl.clearColor(...bckgrnd, 1.0);
+            this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+        }
+        
+        loadShader(type) {
+            let shader_type = null;
+            let shaderString = null;
+            if (type == 'VERTEX') {
+                shader_type = this.gl.VERTEX_SHADER
+                shaderString = vertexShaderTxt;
+            } else if (type == 'FRAGMENT') {
+                shader_type = this.gl.FRAGMENT_SHADER
+                shaderString = fragmentShaderTxt;
+            }
+        
+            let shader = this.gl.createShader(shader_type);
+            this.gl.shaderSource(shader, shaderString);
+        
+            this.gl.compileShader(shader);
+            this.gl.attachShader(this.#program, shader);
+        }
+        
+        prepareShaders() {
+            this.loadShader('VERTEX');
+            this.loadShader('FRAGMENT');
+            this.gl.linkProgram(this.#program);
+            this.gl.validateProgram(this.#program);
+        }
+        
+        createBuffer(vertList) {
+            this.#vertexBufferObj = this.gl.createBuffer();
+            this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.#vertexBufferObj);
+            this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(vertList), this.gl.STATIC_DRAW);
+        }
+        
+        enableAttribArrays() {
+            const posAttrLocation = this.gl.getAttribLocation(this.#program, 'vertPosition');
+            const colorAttrLocation = this.gl.getAttribLocation(this.#program, 'vertColor');
+                                
+            this.gl.vertexAttribPointer(
+                posAttrLocation,
+                2,
+                this.gl.FLOAT,
+                this.gl.FALSE,
+                5 * Float32Array.BYTES_PER_ELEMENT,
+                0,
+            );
+                                            
+            this.gl.vertexAttribPointer(
+                colorAttrLocation,
+                3,
+                this.gl.FLOAT,
+                this.gl.FALSE,
+                5 * Float32Array.BYTES_PER_ELEMENT,
+                2 * Float32Array.BYTES_PER_ELEMENT,
+            );
+                                
+            this.gl.enableVertexAttribArray(posAttrLocation);
+            this.gl.enableVertexAttribArray(colorAttrLocation);
+        }
+        
+        draw(vertList, numOfVertToDraw) {
+            this.createBuffer(vertList);
+            this.enableAttribArrays();   
+                    
+            this.gl.useProgram(this.#program);
+            this.gl.drawArrays(this.gl.TRIANGLES, 0, numOfVertToDraw);
+        }  
+    }
+    
+    const canvas_name = 'canvas-1';
+    
+    let Triangle = function () {
+        let myCanvas = new World(canvas_name, [0.8, 0.8, 0.8]);
+        myCanvas.prepareShaders();
+        
+        let verticesToDraw = [
+            -0.5,  0.5,      0.1, 0.6, 0.8, 
+             0.5,  0.5,      0.1, 0.6, 0.8, 
+             0.5, -0.5,      0.1, 0.6, 0.8
+        ]
+        
+        myCanvas.draw(verticesToDraw, 3);
+    }
+    
+  </script>
+</html>
